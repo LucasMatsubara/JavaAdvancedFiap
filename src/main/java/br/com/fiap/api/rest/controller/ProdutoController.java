@@ -2,6 +2,7 @@ package br.com.fiap.api.rest.controller;
 
 import br.com.fiap.api.rest.model.Produto;
 import br.com.fiap.api.rest.service.ProdutoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -19,7 +20,7 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     @PostMapping
-    public ResponseEntity<Produto> createProduto(@RequestBody Produto produto) {
+    public ResponseEntity<Produto> createProduto(@Valid @RequestBody Produto produto) {
         Produto produtoSalvo = produtoService.create(produto);
         return new ResponseEntity<>(produtoSalvo, HttpStatus.CREATED);
     }
@@ -28,7 +29,7 @@ public class ProdutoController {
     public ResponseEntity<Produto> readProduto(@PathVariable UUID id) {
         Produto produto = produtoService.read(id);
         if (produto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(produto, HttpStatus.OK);
     }
@@ -37,7 +38,7 @@ public class ProdutoController {
     public ResponseEntity<List<Produto>> readProduto() {
         List<Produto> produtos = produtoService.read();
         if (produtos.isEmpty()) {
-            return new ResponseEntity<>(produtos, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(produtos, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(produtos, HttpStatus.OK);
     }
