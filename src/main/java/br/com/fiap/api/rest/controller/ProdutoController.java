@@ -1,5 +1,7 @@
 package br.com.fiap.api.rest.controller;
 
+import br.com.fiap.api.rest.dto.ProdutoRequest;
+import br.com.fiap.api.rest.dto.ProdutoResponse;
 import br.com.fiap.api.rest.model.Produto;
 import br.com.fiap.api.rest.service.ProdutoService;
 import jakarta.validation.Valid;
@@ -16,18 +18,23 @@ import java.util.UUID;
 @RequestMapping("/produtos")
 public class ProdutoController {
 
-    @Autowired
-    private ProdutoService produtoService;
+    private final ProdutoService produtoService;
+
+
+    public ProdutoController(ProdutoService produtoService) {
+        this.produtoService = produtoService;
+    }
 
     @PostMapping
-    public ResponseEntity<Produto> createProduto(@Valid @RequestBody Produto produto) {
+    public ResponseEntity<Produto> createProduto(@Valid @RequestBody ProdutoRequest produto) {
         Produto produtoSalvo = produtoService.create(produto);
         return new ResponseEntity<>(produtoSalvo, HttpStatus.CREATED);
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<Produto> readProduto(@PathVariable UUID id) {
-        Produto produto = produtoService.read(id);
+    public ResponseEntity<ProdutoResponse> readProduto(@PathVariable UUID id) {
+        ProdutoResponse produto = produtoService.read(id);
         if (produto == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -35,8 +42,8 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> readProduto() {
-        List<Produto> produtos = produtoService.read();
+    public ResponseEntity<List<ProdutoResponse>> readProduto() {
+        List<ProdutoResponse> produtos = produtoService.read();
         if (produtos.isEmpty()) {
             return new ResponseEntity<>(produtos, HttpStatus.NOT_FOUND);
         }
@@ -45,7 +52,7 @@ public class ProdutoController {
 
     @PutMapping
     public ResponseEntity<Produto> updateProduto(@RequestBody Produto produto) {
-        Produto produtoExistente = produtoService.read(produto.getId());
+        ProdutoResponse produtoExistente = produtoService.read(produto.getId());
         if (produtoExistente == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
